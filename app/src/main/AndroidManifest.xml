@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.android.gms.samples.vision.face.facetracker"
+    package="driver.assistance"
     android:installLocation="auto"
     android:versionCode="1"
     android:versionName="1">
@@ -27,7 +27,7 @@
             android:value="face" />
 
         <activity
-            android:name="com.google.android.gms.samples.vision.face.facetracker.FaceTrackerActivity"
+            android:name="driver.assistance.MainActivity"
             android:label="Face Tracker"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="fullSensor">

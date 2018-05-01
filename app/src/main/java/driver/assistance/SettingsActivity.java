@@ -1,4 +1,4 @@
-package com.google.android.gms.samples.vision.face.facetracker;
+package driver.assistance;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.gms.samples.vision.face.facetracker.R;
 
 /**
  * Created by marcin on 08.04.18.
@@ -92,7 +94,7 @@ public class SettingsActivity extends Activity {
 
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener((v) -> {
-            Intent intent = new Intent(SettingsActivity.this, FaceTrackerActivity.class);
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
             intent.putExtra("sensibility", sensibility);
             intent.putExtra("sensibilityMax", sensibilitySeekBar.getMax());
             intent.putExtra("threshold", threshold);
