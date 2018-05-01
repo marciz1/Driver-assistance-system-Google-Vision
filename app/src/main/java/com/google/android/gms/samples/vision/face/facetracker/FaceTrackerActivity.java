@@ -22,6 +22,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -58,6 +59,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
     //==============================================================================================
+    private boolean alarmStart;
+    private long startTime;
+    private int counter;
+    private MediaPlayer alarmSound;
+    // values from seekBar
+    private int sensity, alarmLength;
+    private float threshold;
+    //==============================================================================================
     // Activity Methods
     //==============================================================================================
 
@@ -68,6 +77,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.main);
+
+        loadValuesFromSettings();
+        alarmSound = MediaPlayer.create(this, R.raw.alarm2);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
@@ -82,6 +94,16 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
     }
 
+    public void loadValuesFromSettings() {
+        sensity = getIntent().getExtras().getInt("sensity");
+        int sensityMax = getIntent().getExtras().getInt("sensityMax");
+        sensity = (sensityMax - sensity) + 1;
+        threshold = (float) getIntent().getExtras().getInt("threshold");
+        threshold += 1;
+        threshold = threshold / 100;
+        alarmLength = getIntent().getExtras().getInt("alarmLength") + 1;
+    }
+
     /**
      * Handles the requesting of the camera permission.  This includes
      * showing a "Snackbar" message of why the permission is needed then
@@ -92,8 +114,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.CAMERA)) {
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
             ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
@@ -103,15 +124,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
+                ActivityCompat.requestPermissions(thisActivity, permissions, RC_HANDLE_CAMERA_PERM);
             }
         };
 
-        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.ok, listener)
-                .show();
+        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale, Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, listener).show();
     }
 
     /**
@@ -122,13 +139,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private void createCameraSource() {
 
         Context context = getApplicationContext();
-        FaceDetector detector = new FaceDetector.Builder(context)
-                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
-                .build();
+        FaceDetector detector = new FaceDetector.Builder(context).setClassificationType(FaceDetector.ALL_CLASSIFICATIONS).build();
 
-        detector.setProcessor(
-                new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
-                        .build());
+        detector.setProcessor(new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory()).build());
 
         if (!detector.isOperational()) {
             // Note: The first time that an app using face API is installed on a device, GMS will
@@ -142,11 +155,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             Log.w(TAG, "Face detector dependencies are not yet available.");
         }
 
-        mCameraSource = new CameraSource.Builder(context, detector)
-                .setRequestedPreviewSize(640, 480)
-                .setFacing(CameraSource.CAMERA_FACING_FRONT)
-                .setRequestedFps(30.0f)
-                .build();
+        mCameraSource = new CameraSource.Builder(context, detector).setRequestedPreviewSize(640, 480).setFacing(CameraSource.CAMERA_FACING_FRONT).setRequestedFps(30.0f).build();
     }
 
     /**
@@ -211,8 +220,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             return;
         }
 
-        Log.e(TAG, "Permission not granted: results len = " + grantResults.length +
-                " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
+        Log.e(TAG, "Permission not granted: results len = " + grantResults.length + " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -221,10 +229,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Face Tracker sample")
-                .setMessage(R.string.no_camera_permission)
-                .setPositiveButton(R.string.ok, listener)
-                .show();
+        builder.setTitle("Face Tracker sample").setMessage(R.string.no_camera_permission).setPositiveButton(R.string.ok, listener).show();
     }
 
     //==============================================================================================
@@ -239,11 +244,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private void startCameraSource() {
 
         // check that the device has play services available.
-        int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-                getApplicationContext());
+        int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getApplicationContext());
         if (code != ConnectionResult.SUCCESS) {
-            Dialog dlg =
-                    GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
+            Dialog dlg = GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
             dlg.show();
         }
 
@@ -301,6 +304,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
+            runAlarm(checkIsSleeping(face.getIsRightEyeOpenProbability(), face.getIsRightEyeOpenProbability()), sensity, alarmLength);
         }
 
         /**
@@ -321,5 +325,36 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         public void onDone() {
             mOverlay.remove(mFaceGraphic);
         }
+    }
+
+    boolean checkIsSleeping(float rightEyeOpenProbability, float leftEyeOpenProbability) {
+        if (rightEyeOpenProbability < threshold && leftEyeOpenProbability < threshold) {
+            return true;
+        }
+        return false;
+    }
+
+    public void runAlarm(boolean sleep, int sensity, int alarmLength) {
+        Log.w(TAG, "counter: " + counter);
+
+        if (sleep) {
+            if (counter < sensity) counter++;
+        } else {
+            if (counter > 0) counter--;
+        }
+
+        if (counter == sensity) {
+            if (!alarmStart) {
+                startTime = System.currentTimeMillis();
+                alarmStart = true;
+            }
+        }
+
+        if (alarmStart) {
+            float estimatedTime = System.currentTimeMillis() - startTime;
+            if ((estimatedTime / 1000 < alarmLength)) alarmSound.start();
+            else alarmStart = false;
+        }
+        Log.w(TAG, "runAlarm: " + alarmStart);
     }
 }

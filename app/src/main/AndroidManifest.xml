@@ -16,7 +16,6 @@
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/icon"
         android:theme="@style/Theme.AppCompat"
         android:label="FaceTracker">
 
@@ -29,16 +28,21 @@
 
         <activity
             android:name="com.google.android.gms.samples.vision.face.facetracker.FaceTrackerActivity"
-            android:icon="@drawable/icon"
             android:label="Face Tracker"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="fullSensor">
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
     </application>
 
 </manifest>
