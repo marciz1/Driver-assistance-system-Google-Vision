@@ -42,7 +42,6 @@ class FaceGraphic extends GraphicOverlay.Graphic {
 
     FaceGraphic(GraphicOverlay overlay) {
         super(overlay);
-
         //center
         mFacePositionPaint = new Paint();
         mFacePositionPaint.setColor(Color.BLUE);
@@ -57,7 +56,6 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         mBoxPaint.setColor(Color.BLUE);
         mBoxPaint.setStyle(Paint.Style.STROKE);
         mBoxPaint.setStrokeWidth(BOX_STROKE_WIDTH);
-
     }
 
     void setId(int id) {

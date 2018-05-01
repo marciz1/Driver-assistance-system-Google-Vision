@@ -25,9 +25,9 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        TextView textThreshold = (TextView)findViewById(R.id.textThreshold);
-        TextView textSensibility = (TextView)findViewById(R.id.textSensity);
-        TextView textLength = (TextView)findViewById(R.id.textLength);
+        TextView textThreshold = (TextView) findViewById(R.id.textThreshold);
+        TextView textSensibility = (TextView) findViewById(R.id.textSensity);
+        TextView textLength = (TextView) findViewById(R.id.textLength);
 
         // init values
         threshold = 35;
@@ -35,8 +35,7 @@ public class SettingsActivity extends Activity {
         alarmLength = 2;
 
         spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.sound, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.sound, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -50,12 +49,10 @@ public class SettingsActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 
@@ -69,12 +66,10 @@ public class SettingsActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 
@@ -84,17 +79,14 @@ public class SettingsActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 alarmLength = i + 1;
                 textLength.setText("Alarm length: " + alarmLength + " s");
-
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 

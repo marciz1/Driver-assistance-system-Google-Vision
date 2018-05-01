@@ -99,6 +99,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         sensibility = getIntent().getExtras().getInt("sensibility");
         int sensibilityMax = getIntent().getExtras().getInt("sensibilityMax");
         sensibility = (sensibilityMax - sensibility) + 1;
+
         threshold = (float) getIntent().getExtras().getInt("threshold");
         Log.w("Threshold ", String.valueOf(threshold));
         threshold = threshold / 100;
@@ -106,7 +107,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         alarmLength = getIntent().getExtras().getInt("alarmLength") + 1;
     }
 
-    private void initializeAlarm(){
+    private void initializeAlarm() {
         chosenAlarm = getIntent().getExtras().getString("chosenAlarm");
         switch (chosenAlarm) {
             case "Soft alarm":
@@ -133,7 +134,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
     }
 
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
         alarmSound.stop();
     }
@@ -198,7 +199,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         startCameraSource();
     }
 
@@ -349,8 +349,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
             mOverlay.remove(mFaceGraphic);
-            alarmSound.pause();
-            alarmSound.seekTo(0);
+            stopAlarm();
         }
 
         /**
@@ -365,7 +364,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     boolean checkIsSleeping(float rightEyeOpenProbability, float leftEyeOpenProbability) {
         if (rightEyeOpenProbability < threshold && leftEyeOpenProbability < threshold) {
-            if (rightEyeOpenProbability != - 1.00f || leftEyeOpenProbability != -1.00f) {
+            if (rightEyeOpenProbability != -1.00f || leftEyeOpenProbability != -1.00f) {
                 return true;
             }
         }
@@ -375,6 +374,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     public void runAlarm(boolean sleep, int sensibility, int alarmLength) {
         Log.w("alarmStart", "SensibilityMax " + sensibility);
         Log.w("alarmStart", "Sensibility " + counter);
+
         if (sleep) {
             if (counter < sensibility) counter++;
         } else {
@@ -382,26 +382,26 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
 
         if (counter == sensibility) {
-
             if (!alarmStart) {
                 startTime = System.currentTimeMillis();
                 alarmSound.start();
                 alarmStart = true;
-
             }
         }
 
         if (alarmStart) {
             float estimatedTime = System.currentTimeMillis() - startTime;
             if ((estimatedTime / 1000 < alarmLength)) {
-//                Log.w("alarmStart",  estimatedTime / 1000 + "< alarmLength");
                 alarmSound.start();
             } else {
                 alarmStart = false;
-                alarmSound.pause();
-                alarmSound.seekTo(0);
-//                Log.w("alarmStart", "alarmStop");
+                stopAlarm();
             }
         }
+    }
+
+    private void stopAlarm() {
+        alarmSound.pause();
+        alarmSound.seekTo(0);
     }
 }
