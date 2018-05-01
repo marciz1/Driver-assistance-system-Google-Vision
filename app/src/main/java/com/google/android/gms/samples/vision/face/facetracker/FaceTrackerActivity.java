@@ -132,6 +132,12 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
     }
 
+    public void onBackPressed(){
+        super.onBackPressed();
+        alarmSound.pause();
+        alarmSound.seekTo(0);
+    }
+
     /**
      * Handles the requesting of the camera permission.  This includes
      * showing a "Snackbar" message of why the permission is needed then
