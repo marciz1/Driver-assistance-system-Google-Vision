@@ -92,7 +92,12 @@
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
-        android:layout_height="64dp" />
+        android:layout_height="38dp" />
+
+    <Spinner
+        android:id="@+id/soundSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="42dp" />
 
     <Button
         android:id="@+id/button"

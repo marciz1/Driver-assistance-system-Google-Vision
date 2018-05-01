@@ -66,6 +66,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     // values from seekBar
     private int sensity, alarmLength;
     private float threshold;
+    private String chosenAlarm;
     //==============================================================================================
     // Activity Methods
     //==============================================================================================
@@ -79,7 +80,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         setContentView(R.layout.main);
 
         loadValuesFromSettings();
-        alarmSound = MediaPlayer.create(this, R.raw.alarm2);
+        initializeAlarm();
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
@@ -102,6 +103,33 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         threshold += 1;
         threshold = threshold / 100;
         alarmLength = getIntent().getExtras().getInt("alarmLength") + 1;
+    }
+
+    private void initializeAlarm(){
+        chosenAlarm = getIntent().getExtras().getString("chosenAlarm");
+        switch (chosenAlarm) {
+            case "Soft alarm":
+                alarmSound = MediaPlayer.create(this, R.raw.soft_alarm);
+                break;
+            case "Fire alarm":
+                alarmSound = MediaPlayer.create(this, R.raw.fire_alarm);
+                break;
+            case "Clock buzzer":
+                alarmSound = MediaPlayer.create(this, R.raw.clock_buzzer);
+                break;
+            case "School bell":
+                alarmSound = MediaPlayer.create(this, R.raw.school_bell);
+                break;
+            case "Tornado siren":
+                alarmSound = MediaPlayer.create(this, R.raw.tornado_siren);
+                break;
+            case "Woop woop":
+                alarmSound = MediaPlayer.create(this, R.raw.woop_woop);
+                break;
+            case "Siren":
+                alarmSound = MediaPlayer.create(this, R.raw.siren);
+                break;
+        }
     }
 
     /**

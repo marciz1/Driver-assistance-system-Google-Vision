@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,6 +20,7 @@ import java.io.InputStream;
 
 public class SettingsActivity extends Activity {
     private Button button;
+    private Spinner spinner;
     private int sensity;
     private int alarmLength;
     private int threshold;
@@ -26,6 +29,12 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        spinner = (Spinner) findViewById(R.id.soundSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sound, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
         SeekBar sensitySeekBar = (SeekBar) findViewById(R.id.seekBarSensity);
         sensitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -88,6 +97,7 @@ public class SettingsActivity extends Activity {
             intent.putExtra("sensityMax", sensitySeekBar.getMax());
             intent.putExtra("threshold", threshold);
             intent.putExtra("alarmLength", alarmLength);
+            intent.putExtra("chosenAlarm", spinner.getSelectedItem().toString());
             startActivity(intent);
         });
     }
