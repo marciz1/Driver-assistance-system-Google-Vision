@@ -363,7 +363,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     }
 
     public void runAlarm(boolean sleep, int sensity, int alarmLength) {
-        Log.w(TAG, "counter: " + counter);
 
         if (sleep) {
             if (counter < sensity) counter++;
@@ -374,15 +373,23 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (counter == sensity) {
             if (!alarmStart) {
                 startTime = System.currentTimeMillis();
+                alarmSound.start();
                 alarmStart = true;
+                Log.w("alarmStart", "alarmStart");
             }
         }
 
         if (alarmStart) {
             float estimatedTime = System.currentTimeMillis() - startTime;
-            if ((estimatedTime / 1000 < alarmLength)) alarmSound.start();
-            else alarmStart = false;
+            if ((estimatedTime / 1000 < alarmLength)) {
+                Log.w("alarmStart", "estimatedTime / 1000 < alarmLength");
+                alarmSound.start();
+            } else {
+                alarmStart = false;
+                alarmSound.pause();
+                alarmSound.seekTo(0);
+                Log.w("alarmStart", "alarmStop");
+            }
         }
-        Log.w(TAG, "runAlarm: " + alarmStart);
     }
 }
