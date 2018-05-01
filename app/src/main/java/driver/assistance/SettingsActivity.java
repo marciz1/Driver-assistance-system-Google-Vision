@@ -8,9 +8,6 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.google.android.gms.samples.vision.face.facetracker.R;
-
 /**
  * Created by marcin on 08.04.18.
  */
