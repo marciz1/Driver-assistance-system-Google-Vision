@@ -64,7 +64,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private int counter;
     private MediaPlayer alarmSound;
     // values from seekBar
-    private int sensity, alarmLength;
+    private int sensibility, alarmLength;
     private float threshold;
     private String chosenAlarm;
     //==============================================================================================
@@ -96,12 +96,13 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     }
 
     public void loadValuesFromSettings() {
-        sensity = getIntent().getExtras().getInt("sensity");
-        int sensityMax = getIntent().getExtras().getInt("sensityMax");
-        sensity = (sensityMax - sensity) + 1;
+        sensibility = getIntent().getExtras().getInt("sensibility");
+        int sensibilityMax = getIntent().getExtras().getInt("sensibilityMax");
+        sensibility = (sensibilityMax - sensibility) + 1;
         threshold = (float) getIntent().getExtras().getInt("threshold");
-        threshold += 1;
+        Log.w("Threshold ", String.valueOf(threshold));
         threshold = threshold / 100;
+
         alarmLength = getIntent().getExtras().getInt("alarmLength") + 1;
     }
 
@@ -134,8 +135,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     public void onBackPressed(){
         super.onBackPressed();
-        alarmSound.pause();
-        alarmSound.seekTo(0);
+        alarmSound.stop();
     }
 
     /**
@@ -338,7 +338,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
-            runAlarm(checkIsSleeping(face.getIsRightEyeOpenProbability(), face.getIsRightEyeOpenProbability()), sensity, alarmLength);
+            runAlarm(checkIsSleeping(face.getIsRightEyeOpenProbability(), face.getIsRightEyeOpenProbability()), sensibility, alarmLength);
         }
 
         /**
@@ -363,38 +363,42 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     boolean checkIsSleeping(float rightEyeOpenProbability, float leftEyeOpenProbability) {
         if (rightEyeOpenProbability < threshold && leftEyeOpenProbability < threshold) {
-            return true;
+            if (rightEyeOpenProbability != - 1.00f || leftEyeOpenProbability != -1.00f) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void runAlarm(boolean sleep, int sensity, int alarmLength) {
-
+    public void runAlarm(boolean sleep, int sensibility, int alarmLength) {
+        Log.w("alarmStart", "SensibilityMax " + sensibility);
+        Log.w("alarmStart", "Sensibility " + counter);
         if (sleep) {
-            if (counter < sensity) counter++;
+            if (counter < sensibility) counter++;
         } else {
             if (counter > 0) counter--;
         }
 
-        if (counter == sensity) {
+        if (counter == sensibility) {
+
             if (!alarmStart) {
                 startTime = System.currentTimeMillis();
                 alarmSound.start();
                 alarmStart = true;
-                Log.w("alarmStart", "alarmStart");
+
             }
         }
 
         if (alarmStart) {
             float estimatedTime = System.currentTimeMillis() - startTime;
             if ((estimatedTime / 1000 < alarmLength)) {
-                Log.w("alarmStart", "estimatedTime / 1000 < alarmLength");
+//                Log.w("alarmStart",  estimatedTime / 1000 + "< alarmLength");
                 alarmSound.start();
             } else {
                 alarmStart = false;
                 alarmSound.pause();
                 alarmSound.seekTo(0);
-                Log.w("alarmStart", "alarmStop");
+//                Log.w("alarmStart", "alarmStop");
             }
         }
     }
