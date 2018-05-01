@@ -30,7 +30,7 @@ public class SettingsActivity extends Activity {
 
         // init values
         threshold = 35;
-        sensibility = 45;
+        sensibility = 20;
         alarmLength = 2;
 
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -60,7 +60,7 @@ public class SettingsActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 sensibility = i;
-                textSensibility.setText("Sensibility: " + sensibility * 2 + " %");
+                textSensibility.setText("Sensibility: " + sensibility * 4 + " %");
             }
 
             @Override
