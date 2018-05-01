@@ -349,6 +349,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
             mOverlay.remove(mFaceGraphic);
+            alarmSound.pause();
+            alarmSound.seekTo(0);
         }
 
         /**
