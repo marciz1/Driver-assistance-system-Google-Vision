@@ -42,10 +42,6 @@ import driver.assistance.ui.camera.GraphicOverlay;
 
 import java.io.IOException;
 
-/**
- * Activity for the face tracker app.  This app detects faces with the rear facing camera, and draws
- * overlay graphics to indicate the position, size, and ID of each face.
- */
 public final class MainActivity extends AppCompatActivity {
     private static final String TAG = "FaceTracker";
 
@@ -338,7 +334,7 @@ public final class MainActivity extends AppCompatActivity {
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
-            runAlarm(checkIsSleeping(face.getIsRightEyeOpenProbability(), face.getIsRightEyeOpenProbability()), sensibility, alarmLength);
+            runAlarm(checkIsSleeping(face.getIsRightEyeOpenProbability(), face.getIsLeftEyeOpenProbability()), sensibility, alarmLength);
         }
 
         /**
@@ -363,7 +359,7 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     boolean checkIsSleeping(float rightEyeOpenProbability, float leftEyeOpenProbability) {
-        if (rightEyeOpenProbability < threshold && leftEyeOpenProbability < threshold) {
+        if ((rightEyeOpenProbability < threshold && rightEyeOpenProbability > 0) || (leftEyeOpenProbability < threshold && leftEyeOpenProbability > 0)) {
             if (rightEyeOpenProbability != -1.00f || leftEyeOpenProbability != -1.00f) {
                 return true;
             }
